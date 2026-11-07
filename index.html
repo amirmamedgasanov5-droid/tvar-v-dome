@@ -90,6 +90,17 @@ canvas#radar{width:100%;aspect-ratio:1;display:block;border-radius:50%;box-shado
 .pcard .n{font-size:46px;font-weight:900;letter-spacing:4px}
 .pcard .nm{font-size:18px;font-weight:700;margin-bottom:4px}
 .pcard small{color:#444}
+.jump{position:fixed;inset:0;z-index:200;background:#000;touch-action:none}
+.jump canvas{width:100%;height:100%;display:block}
+#jumpTx{position:absolute;left:0;right:0;bottom:12%;text-align:center;font-weight:900;font-size:7vmin;text-shadow:0 0 20px #f00;padding:0 16px;color:#aaa}
+.fx{position:fixed;z-index:150;pointer-events:none}
+.fxbanner{top:0;left:0;right:0;background:#ff2d3d;color:#fff;text-align:center;padding:10px;font-weight:700}
+.fxblack{inset:0;background:#000;color:#ff2d3d;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8vmin;font-weight:900;animation:flick .8s infinite}
+.fxtext{inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8vmin;font-weight:900;color:#ff2d3d;background:rgba(0,0,0,.82);text-shadow:0 0 25px #f00;padding:20px;animation:flick .8s infinite}
+.fxglitch{inset:0;background:#8affc0;mix-blend-mode:difference;animation:flick .7s 1}
+.fxflash{inset:0;background:#000}
+.fxflash canvas{width:100%;height:100%;display:block}
+@keyframes flick{0%{opacity:1}50%{opacity:.55}100%{opacity:1}}
 @media print{
  body{background:#fff;padding:0}.back,.btn,.noprint,.conn{display:none!important}
  .view{display:none!important}#v-cards{display:block!important}
@@ -135,6 +146,9 @@ canvas#radar{width:100%;aspect-ratio:1;display:block;border-radius:50%;box-shado
     <select id="cfgItems"><option>3</option><option>4</option><option>5</option><option>6</option></select>
     <label for="cfgMin">Длительность игры</label>
     <select id="cfgMin"><option value="10">10 минут</option><option value="15">15 минут</option><option value="20">20 минут</option><option value="30">30 минут</option></select>
+    <label for="cfgScary">Страшность</label>
+    <select id="cfgScary"><option value="0">Лайт — без скримеров и фейков</option><option value="1">Обычная — скример и фейк-страхи</option><option value="2">Жесть — чаще, со вспышками лица</option></select>
+    <p class="need" style="text-align:left">⚠ Внезапные громкие звуки и вспышки. Не включай для детей, сердечников и людей с фоточувствительной эпилепсией.</p>
   </div>
   <button class="btn green" id="btnStart" data-act="start">▶ Начать игру</button>
   <div id="lobWait" class="need hidden">Ждём, пока ведущий начнёт игру…</div>
@@ -182,7 +196,7 @@ canvas#radar{width:100%;aspect-ratio:1;display:block;border-radius:50%;box-shado
   <ol>
     <li>Один игрок нажимает «Создать игру» и получает 4-значный код. Остальные нажимают «Войти» и вводят код (или открывают ссылку из лобби).</li>
     <li>Ведущий в лобби вписывает комнаты вашего дома <b>в порядке обхода</b>: соседние строки считаются соседними комнатами (так радар понимает «рядом»). Выбирает число предметов и длительность.</li>
-    <li>Пока ведущий не нажал «Начать», кто-то один (не Тварь!) прячет карточки с кодами по дому — по одной на предмет, который выбран в настройках.</li>
+    <li>Пока ведущий не нажал «Начать» (Тварь ещё не выбрана), прячьте карточки с кодами — по одной на предмет, выбранный в настройках. Лучше всего, когда каждый прячет по одной и знает место только своей.</li>
     <li>По умолчанию Тварь выбирается случайно и тайно. Роль показывается только на твоём экране — не показывай другим.</li>
   </ol>
 
@@ -206,8 +220,17 @@ canvas#radar{width:100%;aspect-ratio:1;display:block;border-radius:50%;box-shado
         <li>😱 <b>Крик</b> (60 с): все выжившие должны замереть на 5 секунд, экран краснеет.</li>
         <li>🌑 <b>Тьма</b> (90 с): радары выжившихся глохнут на 20 секунд.</li>
         <li>👻 <b>Приманка</b> (45 с): выжившим приходит ложный пинг в выбранной тобой комнате.</li>
+        <li>👹 <b>Скример</b> (120 с): у всех выживших на 6 секунд чёрный экран, шёпот и сердцебиение, затем внезапное лицо с криком и надпись «ОН ЗА ТВОЕЙ СПИНОЙ — замри». Нужно реально остановиться и не двигаться, пока идёт отсчёт.</li>
       </ul>
     </li>
+  </ul>
+
+  <h3>Страшность и фейки</h3>
+  <ul>
+    <li>В лобби ведущий выбирает <b>страшность</b>: <b>Лайт</b> (только радар и обычные звуки), <b>Обычная</b> (скример Твари + случайные фейки) или <b>Жесть</b> (фейки чаще, с мгновенной вспышкой лица).</li>
+    <li><b>Фейки</b> приходят выжившим случайно: «потеряна связь», «батарея 1%», ложное «ОНО ЗДЕСЬ!», стуки, шёпот, глюк экрана, надписи вроде «Не оборачивайся, <i>имя</i>». Это не настоящая опасность и не связано с Тварью.</li>
+    <li>Звуки и лицо создаются самой игрой, ничего не загружается из интернета.</li>
+    <li>⚠ Не включайте для детей, сердечников и людей с фоточувствительной эпилепсией. Предупредите всех до старта.</li>
   </ul>
 
   <h3>Победа</h3>
@@ -258,7 +281,7 @@ var ITEMS=[
 ];
 var DEFAULT_ROOMS=['Прихожая','Кухня','Гостиная','Коридор','Спальня','Ванная'];
 var PREFIX='tvar-house-';
-var CD={scream:60000,dark:90000,decoy:45000};
+var CD={scream:60000,dark:90000,decoy:45000,jump:120000};
 var ICE={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'},{urls:'stun:stun1.l.google.com:19302'}]}};
 function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){return null}}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
@@ -325,7 +348,38 @@ var SFX={
   dark:function(){tone(90,2,'sawtooth',.18,0,38)},
   start:function(){tone(110,1.2,'sawtooth',.2,0,55);noise(.8,.2,600)},
   win:function(){[523,659,784,1046].forEach(function(f,i){tone(f,.35,'triangle',.22,i*.15)})},
-  lose:function(){[330,262,196,130].forEach(function(f,i){tone(f,.45,'sawtooth',.16,i*.22)})}
+  lose:function(){[330,262,196,130].forEach(function(f,i){tone(f,.45,'sawtooth',.16,i*.22)})},
+  jump:function(){
+    if(!soundOn)return;var c=ac();if(!c)return;
+    try{
+      var t=c.currentTime,n=2048,curve=new Float32Array(n),k=80;
+      for(var i=0;i<n;i++){var x=i*2/n-1;curve[i]=((3+k)*x*20*Math.PI/180)/(Math.PI+k*Math.abs(x))}
+      var ws=c.createWaveShaper();ws.curve=curve;
+      var g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+1.7);
+      ws.connect(g);g.connect(c.destination);
+      [1,1.51,2.02,2.76].forEach(function(m,i){
+        var o=c.createOscillator();o.type=i%2?'sawtooth':'square';
+        o.frequency.setValueAtTime(600*m,t);o.frequency.linearRampToValueAtTime(2300*m,t+.2);o.frequency.linearRampToValueAtTime(900*m,t+1.5);
+        var l=c.createOscillator(),lg=c.createGain();l.frequency.value=36+i*7;lg.gain.value=260;l.connect(lg);lg.connect(o.frequency);
+        o.connect(ws);o.start(t);o.stop(t+1.75);l.start(t);l.stop(t+1.75);
+      });
+    }catch(e){}
+    noise(1.5,.6,6500);tone(48,.9,'sine',.9,0,22);
+  },
+  screechShort:function(){tone(1400,.28,'sawtooth',.3,0,3200);noise(.28,.35,5500)},
+  whisper:function(){
+    if(!soundOn)return;var c=ac();if(!c)return;
+    try{
+      var t=c.currentTime,n=Math.floor(c.sampleRate*1.6),b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0);
+      for(var i=0;i<n;i++)a[i]=(Math.random()*2-1)*(0.5+0.5*Math.sin(i/c.sampleRate*14));
+      var s=c.createBufferSource();s.buffer=b;
+      var f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=2800;f.Q.value=1.2;
+      var g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.35,t+.5);g.gain.linearRampToValueAtTime(.0001,t+1.6);
+      s.connect(f);f.connect(g);g.connect(c.destination);s.start(t);
+    }catch(e){}
+  },
+  knock:function(){[0,.28,.56].forEach(function(w){tone(95,.12,'square',.35,w,60);noise(.06,.3,500,w)})},
+  glitch:function(){noise(.5,.3,7000);tone(120,.4,'sawtooth',.15,0,900)}
 };
 document.addEventListener('pointerdown',function(){ac()},{passive:true});
 
@@ -345,12 +399,12 @@ function closeDoc(){docOpen=null;show(logicalView())}
 
 /* ================= Сеть: ведущий ================= */
 function newG(){
-  return {phase:'lobby',settings:{rooms:DEFAULT_ROOMS.slice(),items:4,minutes:15,tvarId:null},
+  return {phase:'lobby',settings:{rooms:DEFAULT_ROOMS.slice(),items:4,minutes:15,tvarId:null,scary:1},
     players:{},found:{},log:[],history:[],lastPing:null,freezeUntil:0,darkUntil:0,
     endsAt:0,startedAt:0,winner:null,nextPing:0,nextHint:0};
 }
 function addPlayer(id,name){
-  var p={id:id,name:name,room:null,role:'survivor',connected:true,seen:Date.now(),cd:{scream:0,dark:0,decoy:0}};
+  var p={id:id,name:name,room:null,role:'survivor',connected:true,seen:Date.now(),cd:{scream:0,dark:0,decoy:0,jump:0}};
   G.players[id]=p;return p;
 }
 function hostStart(code,restore,attempt){
@@ -361,6 +415,7 @@ function hostStart(code,restore,attempt){
   p.on('open',function(){
     if(restore){
       G=restore;var now=Date.now();
+      if(G.settings.scary==null)G.settings.scary=1;
       Object.keys(G.players).forEach(function(k){var q=G.players[k];q.connected=(k===myId);q.seen=now});
       if(!G.players[myId])addPlayer(myId,myName);
     }else{G=newG();addPlayer(myId,myName)}
@@ -430,7 +485,7 @@ function broadcast(){
 function saveHost(){ss('tvar-host',JSON.stringify({code:roomCode,name:myName,G:G,t:Date.now()}))}
 function viewFor(pid){
   var p=G.players[pid],now=Date.now(),isT=p&&p.role==='tvar',reveal=G.phase==='end';
-  var set={rooms:G.settings.rooms,items:G.settings.items,minutes:G.settings.minutes};
+  var set={rooms:G.settings.rooms,items:G.settings.items,minutes:G.settings.minutes,scary:G.settings.scary};
   if(pid===myId)set.tvarId=G.settings.tvarId;
   var v={
     now:now,code:roomCode,phase:G.phase,hostId:myId,settings:set,
@@ -438,7 +493,7 @@ function viewFor(pid){
       return {id:q.id,name:q.name,connected:q.connected,role:(reveal||isT||k===pid)?q.role:null};}),
     me:p?{id:p.id,name:p.name,role:p.role,room:p.room,cd:p.cd}:null,
     found:Object.keys(G.found).map(function(c){return {name:G.found[c].name,by:G.found[c].by}}),
-    endsAt:G.endsAt,freezeUntil:G.freezeUntil,darkUntil:G.darkUntil,lastPing:G.lastPing,winner:G.winner,
+    endsAt:G.endsAt,freezeUntil:G.freezeUntil,darkUntil:G.darkUntil,jumpUntil:G.jumpUntil||0,lastPing:G.lastPing,winner:G.winner,
     log:G.log.slice(-30),survivors:idsOf('survivor').length
   };
   if(p&&p.role==='survivor'&&G.phase==='play')v.danger=dangerFor(p);
@@ -532,6 +587,7 @@ function handleAction(pid,m){
         else if(pid===myId)toast('Нужно от 2 до 10 разных комнат');}
       if(m.items){var n=parseInt(m.items,10);if(n>=3&&n<=6)G.settings.items=n}
       if(m.minutes){var mi=parseInt(m.minutes,10);if([10,15,20,30].indexOf(mi)>=0)G.settings.minutes=mi}
+      if('scary' in m){var sc=parseInt(m.scary,10);if(sc>=0&&sc<=2)G.settings.scary=sc}
       if('tvarId' in m){G.settings.tvarId=(m.tvarId&&G.players[m.tvarId])?m.tvarId:null}
       broadcast();saveHost();return;
     case 'start':{
@@ -540,8 +596,8 @@ function handleAction(pid,m){
       if(ids.length<2){toast('Нужно минимум 2 игрока');return}
       var tv=(G.settings.tvarId&&G.players[G.settings.tvarId])?G.settings.tvarId:ids[Math.floor(Math.random()*ids.length)];
       ids.forEach(function(k){var q=G.players[k];q.role=(k===tv)?'tvar':'survivor';q.room=null;
-        q.cd={scream:now+20000,dark:now+40000,decoy:now+10000}});
-      G.found={};G.log=[];G.history=[];G.lastPing=null;G.freezeUntil=0;G.darkUntil=0;
+        q.cd={scream:now+20000,dark:now+40000,decoy:now+10000,jump:now+45000}});
+      G.found={};G.log=[];G.history=[];G.lastPing=null;G.freezeUntil=0;G.darkUntil=0;G.jumpUntil=0;
       G.phase='play';G.startedAt=now;G.endsAt=now+G.settings.minutes*60000;
       G.nextPing=now+15000;G.nextHint=now+25000;G.winner=null;
       logAdd('Игра началась. Свет погас…');
@@ -576,7 +632,7 @@ function handleAction(pid,m){
       if(!tp||tp.role!=='survivor')return;
       if(target!==pid&&p.role!=='tvar')return;
       if(target===pid&&p.role!=='survivor')return;
-      tp.role='tvar';tp.cd={scream:now+20000,dark:now+40000,decoy:now+10000};
+      tp.role='tvar';tp.cd={scream:now+20000,dark:now+40000,decoy:now+10000,jump:now+45000};
       logAdd('💀 Один из выживших заражён. Выживших: '+idsOf('survivor').length);
       send(target,{t:'ev',k:'infect'});
       sendEv(allIds().filter(function(k){return k!==target}),{k:'scare'});
@@ -584,12 +640,14 @@ function handleAction(pid,m){
     }
     case 'ability':{
       if(G.phase!=='play'||p.role!=='tvar')return;
-      var a=m.a;if(!CD[a]||now<p.cd[a])return;
+      var a=m.a;if(!CD[a]||now<(p.cd[a]||0))return;
+      if(a==='jump'&&!(G.settings.scary>=1))return;
       if(a==='decoy'&&G.settings.rooms.indexOf(m.room)<0)return;
       p.cd[a]=now+CD[a];
       if(a==='scream'){G.freezeUntil=now+5000;sendEv(idsOf('survivor'),{k:'scream'})}
       else if(a==='dark'){G.darkUntil=now+20000;sendEv(idsOf('survivor'),{k:'dark'})}
       else if(a==='decoy'){G.lastPing={t:now,rooms:[m.room]};sendEv(idsOf('survivor'),{k:'ping',rooms:[m.room]})}
+      else if(a==='jump'){G.freezeUntil=now+6000;G.jumpUntil=now+6000;sendEv(idsOf('survivor'),{k:'jump',lvl:G.settings.scary})}
       broadcast();saveHost();return;
     }
   }
@@ -701,6 +759,7 @@ function playEv(m){
     case 'ping':SFX.ping();vib(80);flashRadar();break;
     case 'hint':SFX.steps(.25);vib(60);{var hh=$('#hint');if(hh)hh.innerHTML='👂 Слышен шум в комнате: <b style="color:var(--amber)">'+esc(m.room)+'</b>'}break;
     case 'scream':SFX.scream();vib([300,100,300]);break;
+    case 'jump':startJump(m.lvl);break;
     case 'dark':SFX.dark();vib(400);break;
     case 'item':SFX.item();toast('🔎 '+m.by+' нашёл: '+m.name);break;
     case 'codeOk':SFX.item();toast('✅ Найдено: '+m.name);{var ci=$('#codeIn');if(ci)ci.value=''}break;
@@ -723,7 +782,7 @@ function render(prevRole,prevPhase){
   if(!V)return;
   var lv=logicalView();
   if(!docOpen&&currentView!==lv){closeOverlays();show(lv)}
-  if(lv!=='play'){builtRole=null;sigs={}}
+  if(lv!=='play'){builtRole=null;sigs={};stopJump()}
   if(lv==='lobby')renderLobby();
   else if(lv==='play'){
     if(prevPhase!=='play'||(prevRole&&V.me.role!==prevRole&&builtRole))roleCard(prevPhase!=='play');
@@ -756,8 +815,9 @@ function renderLobby(){
   note.classList.toggle('hidden',!isHost);
   note.textContent=tid?'Тварь назначена тобой (😈). Нажми 🎲 у неё, чтобы выбрать случайно. Ты узнаешь, кто она!':'Тварь выберется случайно и тайно. (😈 — назначить вручную; ведущий тогда будет знать, кто Тварь.)';
   $('#cfgNote').classList.toggle('hidden',isHost);
-  var r=$('#cfgRooms'),it=$('#cfgItems'),mi=$('#cfgMin');
-  r.disabled=it.disabled=mi.disabled=!isHost;
+  var r=$('#cfgRooms'),it=$('#cfgItems'),mi=$('#cfgMin'),sc=$('#cfgScary');
+  r.disabled=it.disabled=mi.disabled=sc.disabled=!isHost;
+  if(document.activeElement!==sc)sc.value=String(V.settings.scary==null?1:V.settings.scary);
   if(document.activeElement!==r)r.value=V.settings.rooms.join('\n');
   if(document.activeElement!==it)it.value=String(V.settings.items);
   if(document.activeElement!==mi)mi.value=String(V.settings.minutes);
@@ -790,6 +850,7 @@ function buildPlay(){
        '<button class="btn" id="ab-scream" data-act="ability" data-v="scream"><span>😱 Крик</span><small></small></button>'+
        '<button class="btn" id="ab-dark" data-act="ability" data-v="dark"><span>🌑 Тьма</span><small></small></button>'+
        '<button class="btn" id="ab-decoy" data-act="decoyStart"><span>👻 Приманка</span><small></small></button>'+
+       '<button class="btn" id="ab-jump" data-act="ability" data-v="jump" style="border-color:var(--red)"><span>👹 Скример</span><small></small></button>'+
      '</div>'+
      '<div class="card hidden" id="decoyPick"><b>Выбери комнату для ложного пинга:</b><div class="chips" id="decoyChips"></div><button class="btn ghost" data-act="decoyCancel">Отмена</button></div>'+
      '<label>Выжившие — коснулся? нажми «Поймал»</label><div id="survList"></div>';
@@ -808,7 +869,7 @@ function renderPlay(){
     var itemsHTML='';
     for(var i=0;i<V.settings.items;i++){var f=V.found[i];itemsHTML+='<span class="item'+(f?' ok':'')+'">'+(f?'✔ '+esc(f.name):'? ? ?')+'</span>'}
     setHTML('itemsBar','it|'+itemsHTML,function(){return itemsHTML});
-    var d=V.danger||1,m=$('#radarMsg');
+    var d=curDanger(),m=$('#radarMsg');
     m.className='radarmsg d'+d;
     m.textContent=d===3?'ОНО ЗДЕСЬ!':d===2?'Что-то рядом!':'Тихо…';
   }else{
@@ -838,7 +899,7 @@ function renderEnd(){
 }
 
 /* --- Оверлеи --- */
-function closeOverlays(){$('#overlays').innerHTML='';freezeShown=false}
+function closeOverlays(){$('#overlays').innerHTML='';freezeShown=false;stopJump()}
 function roleCard(first){
   if(!V||!V.me)return;
   var t=V.me.role==='tvar';
@@ -854,9 +915,10 @@ function uiTick(){
   var now=srvNow(),me=V.me;
   $('#pTimer').textContent=fmt(V.endsAt-now);
   if(me.role==='tvar'){
-    ['scream','dark','decoy'].forEach(function(a){
+    ['scream','dark','decoy','jump'].forEach(function(a){
       var b=document.getElementById('ab-'+a);if(!b)return;
-      var left=me.cd[a]-now,s=b.querySelector('small');
+      if(a==='jump')b.classList.toggle('hidden',!(V.settings.scary>=1));
+      var left=(me.cd[a]||0)-now,s=b.querySelector('small');
       b.disabled=left>0;s.textContent=left>0?Math.ceil(left/1000)+' с':'готово';
     });
   }else{
@@ -867,7 +929,8 @@ function uiTick(){
         ping.innerHTML='Сигнал '+ago+' с назад: '+(rr.length?'<b>'+rr.map(esc).join(', ')+'</b>':'<b>искажён</b>');
       }
     }
-    var fr=now<V.freezeUntil;
+    if(jumpActive&&me.role!=='survivor')stopJump();
+    var fr=now<V.freezeUntil&&!(now<(V.jumpUntil||0));
     if(fr&&!freezeShown){
       freezeShown=true;var o=document.createElement('div');o.className='overlay freeze';o.id='frOv';
       o.innerHTML='<h1>ЗАМРИ!</h1><p id="frT"></p>';$('#overlays').appendChild(o);
@@ -905,7 +968,7 @@ function drawRadar(ts){
   var cv=document.getElementById('radar');
   if(!cv||!V||V.phase!=='play'||!V.me||V.me.role!=='survivor')return;
   var ctx=cv.getContext('2d'),W=cv.width,R=W/2,now=srvNow();
-  var dark=now<V.darkUntil,fr=now<V.freezeUntil,d=V.danger||1;
+  var dark=now<V.darkUntil,fr=now<V.freezeUntil,d=curDanger();
   ctx.setTransform(1,0,0,1,0,0);
   ctx.clearRect(0,0,W,W);
   ctx.save();
@@ -955,16 +1018,123 @@ function drawRadar(ts){
 }
 requestAnimationFrame(drawRadar);
 
+/* ================= Скример и фейк-страхи ================= */
+var jumpActive=false,jumpRAF=0,fakeDangerUntil=0;
+function curDanger(){return Date.now()<fakeDangerUntil?3:(V&&V.danger||1)}
+function fx(html,ms,cls){
+  var d=document.createElement('div');d.className='fx '+(cls||'');d.innerHTML=html;document.body.appendChild(d);
+  setTimeout(function(){d.remove()},ms);return d;
+}
+function drawFace(ctx,w,h,t,k){
+  var R=Math.random,i;
+  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+  var cx=w/2+(R()-.5)*14*k,cy=h*.48+(R()-.5)*14*k,fw=Math.min(w*.46,h*.3),fh=fw*1.5;
+  var g=ctx.createRadialGradient(cx,cy,fw*.3,cx,cy,fw*2.4);g.addColorStop(0,'rgba(140,0,0,.6)');g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  g=ctx.createRadialGradient(cx,cy-fh*.1,fw*.2,cx,cy,fh);g.addColorStop(0,'#e4ddcc');g.addColorStop(.7,'#9c9484');g.addColorStop(1,'#3a342c');
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(cx,cy,fw,fh,0,0,7);ctx.fill();
+  ctx.fillStyle='rgba(30,20,20,.35)';
+  [-1,1].forEach(function(s){ctx.beginPath();ctx.ellipse(cx+s*fw*.62,cy+fh*.18,fw*.2,fh*.28,s*.3,0,7);ctx.fill()});
+  [-1,1].forEach(function(s){
+    var ex=cx+s*fw*.42,ey=cy-fh*.2;
+    ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(ex,ey,fw*.28,fw*.36,s*.18,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex+(R()-.5)*fw*.06,ey+(R()-.5)*fw*.06,fw*.035,0,7);ctx.fill();
+    ctx.strokeStyle='rgba(150,0,0,.8)';ctx.lineWidth=fw*.03;
+    for(var j=0;j<3;j++){ctx.beginPath();ctx.moveTo(ex+(j-1)*fw*.08,ey+fw*.3);ctx.lineTo(ex+(j-1)*fw*.1+(R()-.5)*fw*.05,ey+fw*(.7+j*.15));ctx.stroke()}
+  });
+  ctx.fillStyle='#1a1212';
+  [-1,1].forEach(function(s){ctx.beginPath();ctx.ellipse(cx+s*fw*.07,cy+fh*.1,fw*.035,fw*.07,s*.3,0,7);ctx.fill()});
+  var my=cy+fh*.5,mr=fw*.5,mh=fh*(.2+.12*Math.abs(Math.sin(t/60)))*(0.7+.6*k),by=my+mh*.3;
+  ctx.fillStyle='#050000';ctx.beginPath();ctx.ellipse(cx,by,mr,mh,0,0,7);ctx.fill();
+  ctx.fillStyle='#d8cfa0';
+  var n=10,tw=mr*2/n;
+  for(i=0;i<n;i++){
+    var x=cx-mr+(i+.5)*tw,u=(x-cx)/mr,yy=mh*Math.sqrt(Math.max(0,1-u*u)),len=mh*(.25+R()*.18);
+    ctx.beginPath();ctx.moveTo(x-tw*.45,by-yy);ctx.lineTo(x+tw*.45,by-yy);ctx.lineTo(x,by-yy+len);ctx.fill();
+    ctx.beginPath();ctx.moveTo(x-tw*.45,by+yy);ctx.lineTo(x+tw*.45,by+yy);ctx.lineTo(x,by+yy-len);ctx.fill();
+  }
+  ctx.strokeStyle='rgba(90,0,0,.55)';ctx.lineWidth=2;
+  for(i=0;i<14;i++){ctx.beginPath();var sx=cx+(R()-.5)*fw*1.6,sy=cy+(R()-.5)*fh*1.6;ctx.moveTo(sx,sy);ctx.lineTo(sx+(R()-.5)*fw*.5,sy+(R()-.5)*fh*.4);ctx.stroke()}
+  ctx.fillStyle='rgba(255,0,0,'+(.08+.1*k)+')';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='rgba(0,0,0,.25)';for(var y=0;y<h;y+=4)ctx.fillRect(0,y,w,1);
+  for(i=0;i<30;i++){ctx.fillStyle='rgba(255,255,255,'+R()*.12+')';ctx.fillRect(R()*w,R()*h,R()*w*.3,2)}
+}
+function startJump(){
+  if(jumpActive||!V||!V.me||V.me.role!=='survivor')return;
+  jumpActive=true;
+  var ov=document.createElement('div');ov.className='jump';ov.id='jumpOv';
+  ov.innerHTML='<canvas id="jumpCv"></canvas><div id="jumpTx"></div>';document.body.appendChild(ov);
+  var cv=document.getElementById('jumpCv'),W=Math.max(240,Math.floor(innerWidth/2)),H=Math.max(320,Math.floor(innerHeight/2));
+  cv.width=W;cv.height=H;var ctx=cv.getContext('2d'),tx=document.getElementById('jumpTx');
+  var t0=performance.now(),at=2400+Math.random()*800,hold=1000,total=6000,screamed=false;
+  setTimeout(function(){if(jumpActive&&document.getElementById('jumpOv')===ov)stopJump()},total+400);
+  SFX.dark();SFX.beat(.5);setTimeout(function(){SFX.beat(.6)},900);vib(60);
+  var txt=['Не оборачивайся…','Ты слышишь это?','Он очень близко…'][Math.floor(Math.random()*3)];
+  (function frame(now){
+    if(!jumpActive||!document.getElementById('jumpOv'))return;
+    var t=now-t0;
+    if(t<at){
+      ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+      for(var i=0;i<60;i++){ctx.fillStyle='rgba(255,255,255,'+Math.random()*.05+')';ctx.fillRect(Math.random()*W,Math.random()*H,2,2)}
+      tx.style.color='#aaa';tx.textContent=txt;tx.style.opacity=Math.min(1,t/800);
+    }else if(t<at+hold){
+      if(!screamed){screamed=true;SFX.jump();vib([400,80,400,80,700])}
+      tx.textContent='';drawFace(ctx,W,H,t,1);
+    }else{
+      var left=Math.max(0,Math.ceil((total-t)/1000));
+      ctx.fillStyle='#120000';ctx.fillRect(0,0,W,H);
+      ctx.globalAlpha=.12+.06*Math.sin(t/200);drawFace(ctx,W,H,t,.3);ctx.globalAlpha=1;
+      tx.style.color='#ff2d3d';tx.style.opacity=1;
+      tx.innerHTML='ОН ЗА ТВОЕЙ СПИНОЙ<br><span style="font-size:.6em;color:#fff">Замри. Не двигайся. '+left+'</span>';
+    }
+    if(t>=total){stopJump();return}
+    jumpRAF=requestAnimationFrame(frame);
+  })(performance.now());
+}
+function stopJump(){jumpActive=false;cancelAnimationFrame(jumpRAF);var o=document.getElementById('jumpOv');if(o)o.remove()}
+function fakeBusy(){
+  return jumpActive||docOpen||document.getElementById('roleOv')||document.getElementById('menuOv')||document.getElementById('frOv')||(V&&srvNow()<V.darkUntil);
+}
+function runFake(lvl){
+  if(!V||V.phase!=='play'||!V.me||V.me.role!=='survivor')return;
+  if(fakeBusy()){nextFake=Date.now()+8000;return}
+  var list=['steps','knock','whisper','conn','batt','danger','glitch','text'];
+  if(lvl>=2)list.push('flash','flash','text');
+  var k=list[Math.floor(Math.random()*list.length)],nm=V.me.name;
+  switch(k){
+    case 'steps':SFX.steps(.3);vib(80);break;
+    case 'knock':SFX.knock();vib([120,200,120,200,200]);break;
+    case 'whisper':SFX.whisper();vib(60);break;
+    case 'conn':SFX.glitch();fx('⚠ Связь потеряна…',3200,'fxbanner');break;
+    case 'batt':SFX.dark();fx('🔋 1%<br>Экран гаснет…',2400,'fxblack');setTimeout(function(){SFX.whisper()},1400);break;
+    case 'danger':fakeDangerUntil=Date.now()+4000;SFX.beat(.5);vib([80,60,80]);break;
+    case 'glitch':SFX.glitch();fx('',700,'fxglitch');break;
+    case 'text':{
+      var T=['ОН СМОТРИТ НА ТЕБЯ','НЕ ОБОРАЧИВАЙСЯ, '+nm.toUpperCase(),'ОН УЖЕ В ЭТОЙ КОМНАТЕ','ТЫ СЛЫШИШЬ ДЫХАНИЕ?'];
+      SFX.whisper();vib(100);fx(esc(T[Math.floor(Math.random()*T.length)]),1500,'fxtext');break;
+    }
+    case 'flash':{
+      var d=fx('<canvas></canvas>',260,'fxflash'),c=d.firstChild;
+      c.width=Math.floor(innerWidth/3);c.height=Math.floor(innerHeight/3);
+      drawFace(c.getContext('2d'),c.width,c.height,0,1);SFX.screechShort();vib(150);break;
+    }
+  }
+}
+
 /* ================= Сердцебиение и ложные шаги ================= */
 var lastBeat=0,nextFake=Date.now()+20000;
 setInterval(function(){
   if(!V||V.phase!=='play'||!V.me||V.me.role!=='survivor')return;
-  var d=V.danger||1,now=Date.now();
+  var d=curDanger(),now=Date.now();
   if(d>=2){
     var per=d===3?550:1000;
     if(now-lastBeat>=per){lastBeat=now;SFX.beat(d===3?.4:.22);if(d===3)vib(50)}
   }
-  if(now>nextFake){nextFake=now+18000+Math.random()*27000;if(Math.random()<.8)SFX.steps(.1)}
+  if(now>nextFake){
+    var lv=V.settings.scary||0;
+    nextFake=now+(lv===2?25000+Math.random()*35000:lv===1?50000+Math.random()*60000:18000+Math.random()*27000);
+    if(lv===0){if(Math.random()<.8)SFX.steps(.1)}else runFake(lv);
+  }
 },150);
 
 /* ================= Wake lock ================= */
@@ -1040,6 +1210,7 @@ document.addEventListener('click',function(e){
 $('#cfgRooms').addEventListener('change',function(){act({t:'cfg',rooms:this.value.split('\n')})});
 $('#cfgItems').addEventListener('change',function(){act({t:'cfg',items:this.value})});
 $('#cfgMin').addEventListener('change',function(){act({t:'cfg',minutes:this.value})});
+$('#cfgScary').addEventListener('change',function(){act({t:'cfg',scary:this.value})});
 $('#inCode').addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,4)});
 document.addEventListener('input',function(e){if(e.target&&e.target.id==='codeIn')e.target.value=e.target.value.replace(/\D/g,'').slice(0,4)});
 document.addEventListener('keydown',function(e){
@@ -1053,6 +1224,8 @@ document.addEventListener('keydown',function(e){
 $('#cardsGrid').innerHTML=ITEMS.map(function(it,i){
   return '<div class="pcard"><small>Предмет '+(i+1)+'</small><div class="nm">'+it.name+'</div><div class="n">'+it.code+'</div><small>Введи число в игре «Тварь в доме»</small></div>';
 }).join('');
+
+window.__tvar={drawFace:drawFace,runFake:runFake,startJump:startJump,stopJump:stopJump};
 
 /* ================= Старт страницы ================= */
 (function init(){
