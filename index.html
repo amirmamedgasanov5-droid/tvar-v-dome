@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#07090a">
+<title>Тварь в доме</title>
+<style>
+:root{--bg:#07090a;--panel:#10161a;--panel2:#161f24;--fg:#d7e3da;--dim:#7d8f86;--red:#ff2d3d;--green:#37ff8b;--amber:#ffb830;--line:#22302d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100%}
+body{padding:0 16px 40px;user-select:none;-webkit-user-select:none}
+main{max-width:640px;margin:0 auto}
+.view{display:none;padding-top:18px}
+.view.active{display:block}
+h1,h2,h3{margin:0 0 10px}
+h2{font-size:22px;color:var(--green)}
+h3{font-size:17px;color:var(--amber);margin-top:20px}
+p,li{line-height:1.5;font-size:16px}
+.logo{font-size:48px;line-height:1;letter-spacing:2px;color:var(--red);text-shadow:0 0 18px rgba(255,45,61,.55);text-align:center;margin:30px 0 8px;font-weight:900}
+.sub{color:var(--dim);text-align:center;margin:0 0 24px}
+label{display:block;color:var(--dim);font-size:13px;margin:12px 0 4px;text-transform:uppercase;letter-spacing:1px}
+input,textarea,select{width:100%;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:18px;font-family:inherit;user-select:text;-webkit-user-select:text}
+textarea{resize:vertical;min-height:120px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--green);border-color:transparent}
+input:disabled,textarea:disabled,select:disabled{opacity:.6}
+.btn{display:block;width:100%;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:15px;font-size:18px;font-weight:700;margin:10px 0;cursor:pointer;font-family:inherit}
+.btn:active{transform:scale(.98)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.green{background:var(--green);border-color:var(--green);color:#03150a}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.small{display:inline-block;width:auto;padding:8px 12px;font-size:14px;margin:0}
+.btn.ghost{background:transparent;color:var(--dim)}
+.or{text-align:center;color:var(--dim);margin:18px 0 6px}
+.links{display:flex;gap:12px;justify-content:center;margin-top:24px}
+.links a,.back{color:var(--green);text-decoration:underline;cursor:pointer;font-size:16px}
+.back{display:inline-block;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.codebox{text-align:center;font-size:56px;letter-spacing:10px;font-weight:900;color:var(--green);text-shadow:0 0 14px rgba(55,255,139,.4);margin:6px 0}
+.pl{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.pl:last-child{border:none}
+.pl .nm{flex:1;font-size:17px}
+.pl .off{color:var(--red);font-size:12px}
+.tag{font-size:12px;border-radius:6px;padding:2px 7px;background:var(--panel2);color:var(--dim)}
+.tag.red{background:rgba(255,45,61,.18);color:var(--red)}
+.tag.g{background:rgba(55,255,139,.15);color:var(--green)}
+.hud{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:8px}
+.hud .t{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--amber)}
+.hud .mid{color:var(--dim);font-size:14px;text-align:center;flex:1}
+.hud button{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:10px;font-size:20px;padding:6px 12px;cursor:pointer}
+.radarwrap{position:relative;width:min(88vw,52vh,520px);margin:6px auto}
+canvas#radar{width:100%;aspect-ratio:1;display:block;border-radius:50%;box-shadow:0 0 30px rgba(55,255,139,.15)}
+.radarmsg{text-align:center;font-size:20px;font-weight:800;min-height:28px;margin-top:4px;letter-spacing:1px}
+.radarmsg.d1{color:var(--green)}.radarmsg.d2{color:var(--amber)}.radarmsg.d3{color:var(--red);animation:blink .5s infinite}
+@keyframes blink{50%{opacity:.35}}
+.ping{text-align:center;color:var(--dim);font-size:15px;min-height:22px}
+.ping b{color:var(--amber)}
+.items{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.item{padding:6px 10px;border-radius:8px;font-size:14px;background:var(--panel2);color:var(--dim);border:1px dashed var(--line)}
+.item.ok{background:rgba(55,255,139,.15);color:var(--green);border:1px solid var(--green)}
+.row{display:flex;gap:8px}
+.row input{flex:1;text-align:center;letter-spacing:6px;font-size:22px}
+.row .btn{width:auto;margin:0;padding:0 20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:11px 16px;font-size:16px;cursor:pointer}
+.chip.sel{background:var(--green);color:#03150a;border-color:var(--green);font-weight:800}
+.chip.red.sel{background:var(--red);color:#fff;border-color:var(--red)}
+.need{color:var(--amber);text-align:center;font-size:15px;margin:4px 0}
+.abil{display:grid;grid-template-columns:1fr;gap:8px}
+.abil .btn{margin:0;display:flex;justify-content:space-between;align-items:center}
+.abil .btn small{color:var(--amber);font-size:14px}
+.hint{background:rgba(255,45,61,.1);border:1px solid rgba(255,45,61,.4);border-radius:12px;padding:14px;text-align:center;font-size:18px;min-height:56px}
+.hidden{display:none!important}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;padding:24px;text-align:center}
+.overlay.freeze{background:rgba(120,0,10,.88)}
+.overlay h1{font-size:54px;margin:0 0 10px}
+.overlay p{font-size:20px;max-width:420px}
+.conn{position:sticky;top:0;z-index:60;background:var(--red);color:#fff;text-align:center;padding:8px;font-weight:700;margin:0 -16px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 18px;z-index:99;max-width:90vw;text-align:center}
+.menu{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:70;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow:auto}
+.menu .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;width:min(520px,100%)}
+.win{font-size:34px;font-weight:900;text-align:center;margin:16px 0}
+.win.s{color:var(--green)}.win.t{color:var(--red)}
+.log div{padding:4px 0;color:var(--dim);font-size:15px}
+.rules{user-select:text;-webkit-user-select:text}
+.rules ul,.rules ol{padding-left:22px}
+.rules code,.mono{background:var(--panel2);padding:1px 6px;border-radius:5px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pcard{border:2px dashed #888;border-radius:10px;padding:14px;text-align:center;background:#fff;color:#000;break-inside:avoid}
+.pcard .n{font-size:46px;font-weight:900;letter-spacing:4px}
+.pcard .nm{font-size:18px;font-weight:700;margin-bottom:4px}
+.pcard small{color:#444}
+@media print{
+ body{background:#fff;padding:0}.back,.btn,.noprint,.conn{display:none!important}
+ .view{display:none!important}#v-cards{display:block!important}
+ .cards{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="conn" class="conn hidden">⚠ Связь потеряна… переподключаемся</div>
+<main>
+
+<!-- ГЛАВНАЯ -->
+<section id="v-home" class="view active">
+  <div class="logo">ТВАРЬ<br>В ДОМЕ</div>
+  <p class="sub">Хоррор-прятки с радаром. Выключи свет, возьми телефоны и планшеты.</p>
+  <label for="inName">Твоё имя</label>
+  <input id="inName" maxlength="14" autocomplete="off" placeholder="Например: Аня">
+  <button class="btn red" data-act="create">Создать игру</button>
+  <div class="or">или войти в чужую</div>
+  <input id="inCode" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Код комнаты (4 цифры)" style="text-align:center;letter-spacing:6px">
+  <button class="btn" data-act="join">Войти в игру</button>
+  <div class="links"><a data-act="doc" data-v="rules">📖 Правила</a><a data-act="doc" data-v="cards">🖨 Карточки предметов</a></div>
+</section>
+
+<!-- ЛОББИ -->
+<section id="v-lobby" class="view">
+  <h2>Комната</h2>
+  <div class="card" style="text-align:center">
+    <div style="color:var(--dim);font-size:14px">Код комнаты — скажи его остальным</div>
+    <div class="codebox" id="lobCode">----</div>
+    <button class="btn small" data-act="copy">📋 Скопировать ссылку</button>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Игроки (<span id="lobCount">0</span>/10)</h3>
+    <div id="lobPlayers"></div>
+    <div id="lobTvarNote" class="need hidden"></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Настройки <span id="cfgNote" class="tag">только ведущий</span></h3>
+    <label for="cfgRooms">Комнаты дома (по одной в строке, в порядке обхода — соседние строки = соседние комнаты)</label>
+    <textarea id="cfgRooms"></textarea>
+    <label for="cfgItems">Предметов спрятано</label>
+    <select id="cfgItems"><option>3</option><option>4</option><option>5</option><option>6</option></select>
+    <label for="cfgMin">Длительность игры</label>
+    <select id="cfgMin"><option value="10">10 минут</option><option value="15">15 минут</option><option value="20">20 минут</option><option value="30">30 минут</option></select>
+  </div>
+  <button class="btn green" id="btnStart" data-act="start">▶ Начать игру</button>
+  <div id="lobWait" class="need hidden">Ждём, пока ведущий начнёт игру…</div>
+  <button class="btn ghost" data-act="leave">Выйти из комнаты</button>
+  <div class="links"><a data-act="doc" data-v="rules">📖 Правила</a><a data-act="doc" data-v="cards">🖨 Карточки</a></div>
+</section>
+
+<!-- ИГРА -->
+<section id="v-play" class="view">
+  <div class="hud">
+    <div class="t" id="pTimer">--:--</div>
+    <div class="mid" id="pMid"></div>
+    <button data-act="menu" aria-label="Меню">☰</button>
+  </div>
+  <div id="playBody"></div>
+</section>
+
+<!-- КОНЕЦ -->
+<section id="v-end" class="view">
+  <div class="win" id="endWin"></div>
+  <p id="endReason" style="text-align:center;color:var(--dim)"></p>
+  <div class="card"><h3 style="margin-top:0">Кто кем был</h3><div id="endPlayers"></div></div>
+  <div class="card"><h3 style="margin-top:0">Предметы</h3><div id="endItems"></div></div>
+  <div class="card log"><h3 style="margin-top:0">Хроника</h3><div id="endLog"></div></div>
+  <button class="btn green hidden" id="btnAgain" data-act="again">Сыграть ещё раз</button>
+  <div id="endWait" class="need hidden">Ждём ведущего…</div>
+  <button class="btn ghost" data-act="leave">Выйти</button>
+</section>
+
+<!-- ПРАВИЛА -->
+<section id="v-rules" class="view rules">
+  <a class="back" data-act="closedoc">← Назад</a>
+  <h2>Правила: «Тварь в доме»</h2>
+  <p>Хоррор-игра в реальном доме. Один (или несколько) игрок — <b>Тварь</b>, остальные — <b>выжившие</b>. Устройства (телефоны/планшеты) связаны между собой напрямую через интернет (P2P), сервер игры не нужен.</p>
+
+  <h3>Что нужно</h3>
+  <ul>
+    <li>2–10 игроков, у каждого телефон или планшет (можно и один на двоих — тогда играете парой).</li>
+    <li>Интернет (Wi-Fi дома достаточно) — он нужен только чтобы устройства нашли друг друга.</li>
+    <li>Тёмный дом, фонарик по желанию (лучше не светить в экран друг другу).</li>
+    <li>Распечатанные <a data-act="doc" data-v="cards" style="color:var(--green);text-decoration:underline;cursor:pointer">карточки предметов</a>: вырезать и спрятать по дому до начала игры.</li>
+  </ul>
+
+  <h3>Подготовка</h3>
+  <ol>
+    <li>Один игрок нажимает «Создать игру» и получает 4-значный код. Остальные нажимают «Войти» и вводят код (или открывают ссылку из лобби).</li>
+    <li>Ведущий в лобби вписывает комнаты вашего дома <b>в порядке обхода</b>: соседние строки считаются соседними комнатами (так радар понимает «рядом»). Выбирает число предметов и длительность.</li>
+    <li>Пока ведущий не нажал «Начать», кто-то один (не Тварь!) прячет карточки с кодами по дому — по одной на предмет, который выбран в настройках.</li>
+    <li>По умолчанию Тварь выбирается случайно и тайно. Роль показывается только на твоём экране — не показывай другим.</li>
+  </ol>
+
+  <h3>Как играть выжившим</h3>
+  <ul>
+    <li><b>Отмечай, где ты</b>: внизу экрана кнопки комнат. Нажимай каждый раз, когда переходишь. Без этого радар не знает, насколько ты близко к Твари.</li>
+    <li><b>Радар</b> зелёный, когда тихо, жёлтый «Что-то рядом!», когда Тварь в соседней комнате, и красный «ОНО ЗДЕСЬ!» — когда в твоей. Он пищит и вибрирует чаще, чем ближе опасность.</li>
+    <li><b>Пинг</b> каждые ~35 секунд показывает, где Тварь была <i>10 секунд назад</i>. Она могла уйти. Иногда пинг — <b>приманка</b>, которую специально подбросила Тварь.</li>
+    <li>Шаги и скрипы в наушниках/динамике иногда ложные. Не верь ушам.</li>
+    <li><b>Найди карточки с кодами</b> и введи код в поле — предмет засчитается всей команде. Нашли все предметы — выжившие победили.</li>
+    <li>Тварь коснулась тебя? Честно жми «Меня поймали»: ты становишься Тварью (и теперь охотишься на бывших друзей).</li>
+  </ul>
+
+  <h3>Как играть Твари</h3>
+  <ul>
+    <li>Отмечай свою комнату — выжившие получают пинг, а радар считает расстояние.</li>
+    <li>Каждые ~25 секунд ты слышишь «шум» — комнату, где кто-то из выживших.</li>
+    <li>Коснись выжившего — и нажми «Поймал» напротив его имени (или он сам нажмёт «Меня поймали»). Он становится Тварью.</li>
+    <li><b>Способности</b> (у каждой своя перезарядка):
+      <ul>
+        <li>😱 <b>Крик</b> (60 с): все выжившие должны замереть на 5 секунд, экран краснеет.</li>
+        <li>🌑 <b>Тьма</b> (90 с): радары выжившихся глохнут на 20 секунд.</li>
+        <li>👻 <b>Приманка</b> (45 с): выжившим приходит ложный пинг в выбранной тобой комнате.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>Победа</h3>
+  <ul>
+    <li><b>Выжившие</b>: нашли все предметы.</li>
+    <li><b>Тварь</b>: заразила всех или время вышло.</li>
+  </ul>
+
+  <h3>Честная игра</h3>
+  <ul>
+    <li>Не бегать, не толкаться, не залезать в опасные места. Ходить шагом.</li>
+    <li>Не светить фонарём в лицо. Не прятаться в местах, куда нельзя (шкафы с хрупким, подвал и т. д. — договоритесь заранее).</li>
+    <li>Кнопку «Замри» от Крика соблюдайте на слово.</li>
+    <li>Выйти из игры можно через ☰ в любой момент.</li>
+  </ul>
+
+  <h3>Если что-то не работает</h3>
+  <ul>
+    <li><b>«Комната не найдена»</b>: проверь код. Создатель комнаты должен держать страницу открытой (экран не гасить — игра сама просит телефон не засыпать).</li>
+    <li><b>Связь потеряна</b>: игра сама переподключается каждые пару секунд. Если ведущий случайно обновил страницу — он автоматически вернётся в комнату.</li>
+    <li>Все устройства лучше держать в одной Wi-Fi. Через мобильный интернет соединение тоже обычно работает, но иногда оператор его блокирует — тогда переключитесь на Wi-Fi.</li>
+    <li>Звук включается после первого нажатия на экран (так устроены браузеры). Кнопка 🔊 в меню ☰ выключает звук.</li>
+  </ul>
+</section>
+
+<!-- КАРТОЧКИ -->
+<section id="v-cards" class="view">
+  <a class="back" data-act="closedoc">← Назад</a>
+  <h2>Карточки предметов</h2>
+  <p class="noprint">Распечатай (кнопка ниже), вырежи и спрячь по дому столько карточек, сколько предметов выбрано в настройках (первые N по порядку). Игрок, нашедший карточку, вводит число в игре.</p>
+  <button class="btn noprint" onclick="window.print()">🖨 Печать</button>
+  <div class="cards" id="cardsGrid"></div>
+</section>
+
+</main>
+<div id="overlays"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
+<script>
+(function(){
+'use strict';
+/* ================= Утилиты ================= */
+var $=function(s){return document.querySelector(s)};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var ITEMS=[
+ {code:'4271',name:'Ключ'},{code:'8836',name:'Предохранитель'},{code:'1594',name:'Бензин'},
+ {code:'6403',name:'Фонарь'},{code:'7720',name:'Рация'},{code:'3358',name:'Аккумулятор'}
+];
+var DEFAULT_ROOMS=['Прихожая','Кухня','Гостиная','Коридор','Спальня','Ванная'];
+var PREFIX='tvar-house-';
+var CD={scream:60000,dark:90000,decoy:45000};
+var ICE={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'},{urls:'stun:stun1.l.google.com:19302'}]}};
+function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){return null}}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function rid(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4)}
+function toast(msg,ms){
+  var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);
+  setTimeout(function(){t.remove()},ms||2800);
+}
+function vib(p){try{if(navigator.vibrate)navigator.vibrate(p)}catch(e){}}
+function fmt(ms){ms=Math.max(0,Math.ceil(ms/1000));var m=Math.floor(ms/60),s=ms%60;return (m<10?'0':'')+m+':'+(s<10?'0':'')+s}
+
+/* ================= Глобальное состояние ================= */
+var role='none';          // 'host' | 'client' | 'none'
+var peer=null, conns={}, conn=null;
+var myId=ss('tvar-cid')||rid(); ss('tvar-cid',myId);
+var myName='', roomCode='';
+var G=null;               // состояние (только у ведущего)
+var V=null;               // моё представление состояния
+var srvOff=0, lastState=0;
+var docOpen=null, currentView='home';
+var tickTimer=null, hbTimer=null, staleTimer=null, reconTimer=null;
+var builtRole=null, sigs={};
+var decoyMode=false;
+
+function srvNow(){return Date.now()+srvOff}
+
+/* ================= Звук ================= */
+var AC=null, soundOn=ls('tvar-sound')!=='0';
+function ac(){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){AC=null}}
+  if(AC&&AC.state==='suspended'){try{AC.resume()}catch(e){}}
+  return AC;
+}
+function tone(f,d,type,vol,when,slideTo){
+  if(!soundOn)return;var c=ac();if(!c)return;
+  try{
+    var t=c.currentTime+(when||0),o=c.createOscillator(),g=c.createGain();
+    o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+    if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,t+d);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(vol,0.001),t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+0.05);
+  }catch(e){}
+}
+function noise(d,vol,freq,when){
+  if(!soundOn)return;var c=ac();if(!c)return;
+  try{
+    var t=c.currentTime+(when||0),n=Math.floor(c.sampleRate*d),b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0);
+    for(var i=0;i<n;i++)a[i]=Math.random()*2-1;
+    var s=c.createBufferSource();s.buffer=b;
+    var f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=freq||1500;
+    var g=c.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    s.connect(f);f.connect(g);g.connect(c.destination);s.start(t);
+  }catch(e){}
+}
+var SFX={
+  beat:function(v){tone(58,.14,'sine',v);tone(46,.16,'sine',v*.8,.17)},
+  ping:function(){tone(880,.25,'sine',.25);tone(660,.5,'sine',.15,.18)},
+  scream:function(){noise(1.2,.5,2500);tone(900,1,'sawtooth',.18,0,260)},
+  steps:function(v){for(var i=0;i<4;i++)noise(.09,v||.18,320,i*.38)},
+  item:function(){tone(660,.12,'triangle',.22);tone(990,.25,'triangle',.22,.12)},
+  bad:function(){tone(150,.3,'square',.12)},
+  infect:function(){noise(1.6,.45,900);tone(70,1.6,'sawtooth',.25,0,35)},
+  dark:function(){tone(90,2,'sawtooth',.18,0,38)},
+  start:function(){tone(110,1.2,'sawtooth',.2,0,55);noise(.8,.2,600)},
+  win:function(){[523,659,784,1046].forEach(function(f,i){tone(f,.35,'triangle',.22,i*.15)})},
+  lose:function(){[330,262,196,130].forEach(function(f,i){tone(f,.45,'sawtooth',.16,i*.22)})}
+};
+document.addEventListener('pointerdown',function(){ac()},{passive:true});
+
+/* ================= Навигация по экранам ================= */
+function logicalView(){
+  if(!V)return 'home';
+  return V.phase==='lobby'?'lobby':V.phase==='play'?'play':'end';
+}
+function show(id){
+  currentView=id;
+  var vs=document.querySelectorAll('.view');
+  for(var i=0;i<vs.length;i++)vs[i].classList.toggle('active',vs[i].id==='v-'+id);
+  window.scrollTo(0,0);
+}
+function openDoc(id){docOpen=id;show(id)}
+function closeDoc(){docOpen=null;show(logicalView())}
+
+/* ================= Сеть: ведущий ================= */
+function newG(){
+  return {phase:'lobby',settings:{rooms:DEFAULT_ROOMS.slice(),items:4,minutes:15,tvarId:null},
+    players:{},found:{},log:[],history:[],lastPing:null,freezeUntil:0,darkUntil:0,
+    endsAt:0,startedAt:0,winner:null,nextPing:0,nextHint:0};
+}
+function addPlayer(id,name){
+  var p={id:id,name:name,room:null,role:'survivor',connected:true,seen:Date.now(),cd:{scream:0,dark:0,decoy:0}};
+  G.players[id]=p;return p;
+}
+function hostStart(code,restore,attempt){
+  role='host';roomCode=code;attempt=attempt||0;
+  if(peer){try{peer.destroy()}catch(e){}}
+  peer=new Peer(PREFIX+code,ICE);
+  var p=peer;
+  p.on('open',function(){
+    if(restore){
+      G=restore;var now=Date.now();
+      Object.keys(G.players).forEach(function(k){var q=G.players[k];q.connected=(k===myId);q.seen=now});
+      if(!G.players[myId])addPlayer(myId,myName);
+    }else{G=newG();addPlayer(myId,myName)}
+    ss('tvar-role','host');saveHost();startTimers();
+    V=viewFor(myId);srvOff=0;lastState=Date.now();docOpen=null;render();
+    if(restore)toast('Комната восстановлена');
+  });
+  p.on('connection',function(c){
+    c.on('data',function(m){hostRecv(c,m)});
+    c.on('close',function(){hostConnClosed(c)});
+    c.on('error',function(){});
+  });
+  p.on('error',function(e){
+    if(e.type==='unavailable-id'){
+      if(restore&&attempt<8){setTimeout(function(){hostStart(code,restore,attempt+1)},2000);return}
+      if(!restore){hostStart(String(1000+Math.floor(Math.random()*9000)),null,0);return}
+      toast('Не удалось восстановить комнату');resetToHome();return;
+    }
+    if(e.type==='peer-unavailable'){return}
+    if(!G){toast('Нет связи с сервером соединений. Проверь интернет.',4000);role='none'}
+  });
+  p.on('disconnected',function(){try{p.reconnect()}catch(e){}});
+}
+function hostRecv(c,m){
+  if(!m||typeof m!=='object')return;
+  if(m.t==='hello'){
+    var cid=String(m.cid||'').slice(0,40),name=String(m.name||'').trim().slice(0,14);
+    if(!cid||!name){c.send({t:'err',msg:'Введите имя',fatal:1});return}
+    var p=G.players[cid];
+    if(!p){
+      if(G.phase!=='lobby'){c.send({t:'err',msg:'Игра уже идёт, зайти нельзя',fatal:1});return}
+      if(Object.keys(G.players).length>=10){c.send({t:'err',msg:'Комната заполнена (10 игроков)',fatal:1});return}
+      var low=name.toLowerCase();
+      if(Object.keys(G.players).some(function(k){return G.players[k].name.toLowerCase()===low})){c.send({t:'err',msg:'Это имя уже занято',fatal:1});return}
+      p=addPlayer(cid,name);
+    }
+    p.connected=true;p.seen=Date.now();
+    var old=conns[cid];conns[cid]=c;c._pid=cid;
+    if(old&&old!==c){try{old.close()}catch(e){}}
+    broadcast();return;
+  }
+  var pid=c._pid;if(!pid||!G.players[pid]||conns[pid]!==c)return;
+  G.players[pid].seen=Date.now();G.players[pid].connected=true;
+  handleAction(pid,m);
+}
+function hostConnClosed(c){
+  var pid=c._pid;if(!pid||conns[pid]!==c||!G||!G.players[pid])return;
+  G.players[pid].connected=false;G.players[pid].seen=Date.now();broadcast();
+}
+function send(pid,msg){
+  if(pid===myId){setTimeout(function(){clientRecv(msg)},0);return}
+  var c=conns[pid];if(c&&c.open){try{c.send(msg)}catch(e){}}
+}
+function sendEv(pids,ev){
+  pids.forEach(function(pid){var m={t:'ev'};for(var k in ev)m[k]=ev[k];send(pid,m)});
+}
+function idsOf(roleName){return Object.keys(G.players).filter(function(k){return G.players[k].role===roleName})}
+function allIds(){return Object.keys(G.players)}
+function broadcast(){
+  if(!G)return;
+  Object.keys(G.players).forEach(function(pid){
+    var p=G.players[pid];
+    if(pid!==myId&&!p.connected)return;
+    send(pid,{t:'state',v:viewFor(pid)});
+  });
+}
+function saveHost(){ss('tvar-host',JSON.stringify({code:roomCode,name:myName,G:G,t:Date.now()}))}
+function viewFor(pid){
+  var p=G.players[pid],now=Date.now(),isT=p&&p.role==='tvar',reveal=G.phase==='end';
+  var set={rooms:G.settings.rooms,items:G.settings.items,minutes:G.settings.minutes};
+  if(pid===myId)set.tvarId=G.settings.tvarId;
+  var v={
+    now:now,code:roomCode,phase:G.phase,hostId:myId,settings:set,
+    players:allIds().map(function(k){var q=G.players[k];
+      return {id:q.id,name:q.name,connected:q.connected,role:(reveal||isT||k===pid)?q.role:null};}),
+    me:p?{id:p.id,name:p.name,role:p.role,room:p.room,cd:p.cd}:null,
+    found:Object.keys(G.found).map(function(c){return {name:G.found[c].name,by:G.found[c].by}}),
+    endsAt:G.endsAt,freezeUntil:G.freezeUntil,darkUntil:G.darkUntil,lastPing:G.lastPing,winner:G.winner,
+    log:G.log.slice(-30),survivors:idsOf('survivor').length
+  };
+  if(p&&p.role==='survivor'&&G.phase==='play')v.danger=dangerFor(p);
+  return v;
+}
+function dangerFor(p){
+  var rooms=G.settings.rooms;if(p.room==null)return 1;
+  var i=rooms.indexOf(p.room),best=99;
+  allIds().forEach(function(k){var q=G.players[k];
+    if(q.role==='tvar'&&q.room!=null){var j=rooms.indexOf(q.room);if(j>=0&&i>=0)best=Math.min(best,Math.abs(i-j))}});
+  return best===0?3:best===1?2:1;
+}
+function logAdd(txt){G.log.push({t:Date.now(),txt:txt})}
+function tvarRooms(){
+  var r=[];allIds().forEach(function(k){var q=G.players[k];if(q.role==='tvar'&&q.room!=null)r.push(q.room)});return r;
+}
+function uniq(a){return a.filter(function(x,i){return a.indexOf(x)===i})}
+
+function startTimers(){
+  clearInterval(tickTimer);tickTimer=setInterval(tick,1000);
+}
+function tick(){
+  if(role!=='host'||!G)return;
+  var now=Date.now(),k;
+  if(G.phase==='play'){
+    G.history.push({t:now,rooms:tvarRooms()});while(G.history.length>20)G.history.shift();
+    if(now>=G.endsAt){finish('tvar','Время вышло — выжившие не успели.');return}
+    if(now>=G.nextPing){doPing();G.nextPing=now+35000}
+    if(now>=G.nextHint){doHint();G.nextHint=now+25000}
+  }
+  for(k in G.players){
+    var p=G.players[k];
+    if(k!==myId&&p.connected&&now-p.seen>12000)p.connected=false;
+  }
+  if(G.phase==='lobby'){
+    Object.keys(G.players).forEach(function(k){
+      var p=G.players[k];
+      if(k!==myId&&!p.connected&&now-p.seen>15000){delete G.players[k];if(G.settings.tvarId===k)G.settings.tvarId=null}
+    });
+  }
+  broadcast();saveHost();
+}
+function doPing(){
+  var now=Date.now(),snap=null,i;
+  for(i=G.history.length-1;i>=0;i--){if(G.history[i].t<=now-10000){snap=G.history[i];break}}
+  if(!snap)snap=G.history[0];
+  var rooms=snap?uniq(snap.rooms):[];
+  G.lastPing={t:now,rooms:rooms};
+  sendEv(idsOf('survivor'),{k:'ping',rooms:rooms});
+}
+function doHint(){
+  var cand=idsOf('survivor').filter(function(k){return G.players[k].room!=null});
+  if(!cand.length)return;
+  var k=cand[Math.floor(Math.random()*cand.length)];
+  sendEv(idsOf('tvar'),{k:'hint',room:G.players[k].room});
+}
+function checkEnd(){
+  if(G.phase!=='play')return;
+  if(idsOf('tvar').length===0){finish('survivors','Тварь покинула игру.');return}
+  if(idsOf('survivor').length===0){finish('tvar','Все выжившие заражены.');return}
+  if(Object.keys(G.found).length>=G.settings.items){finish('survivors','Все предметы найдены — выход открыт!')}
+}
+function finish(w,reason){
+  G.phase='end';G.winner={w:w,reason:reason};
+  logAdd(w==='tvar'?'Победила Тварь':w==='survivors'?'Победили выжившие':'Игра прервана');
+  sendEv(allIds(),{k:'end'});
+  broadcast();saveHost();
+}
+function parseRooms(arr){
+  var out=[];
+  for(var i=0;i<arr.length;i++){
+    var s=String(arr[i]).trim().slice(0,20);
+    if(s&&out.indexOf(s)<0)out.push(s);
+  }
+  return out;
+}
+function handleAction(pid,m){
+  var p=G.players[pid];if(!p)return;var now=Date.now();
+  switch(m.t){
+    case 'hb':return;
+    case 'leave':
+      if(pid===myId)return;
+      removePlayer(pid,false);return;
+    case 'room':
+      if(m.room===null||G.settings.rooms.indexOf(m.room)>=0){p.room=m.room;broadcast()}
+      return;
+    case 'cfg':
+      if(pid!==myId||G.phase!=='lobby')return;
+      if(m.rooms){var r=parseRooms(m.rooms);
+        if(r.length>=2&&r.length<=10)G.settings.rooms=r;
+        else if(pid===myId)toast('Нужно от 2 до 10 разных комнат');}
+      if(m.items){var n=parseInt(m.items,10);if(n>=3&&n<=6)G.settings.items=n}
+      if(m.minutes){var mi=parseInt(m.minutes,10);if([10,15,20,30].indexOf(mi)>=0)G.settings.minutes=mi}
+      if('tvarId' in m){G.settings.tvarId=(m.tvarId&&G.players[m.tvarId])?m.tvarId:null}
+      broadcast();saveHost();return;
+    case 'start':{
+      if(pid!==myId||G.phase!=='lobby')return;
+      var ids=allIds();
+      if(ids.length<2){toast('Нужно минимум 2 игрока');return}
+      var tv=(G.settings.tvarId&&G.players[G.settings.tvarId])?G.settings.tvarId:ids[Math.floor(Math.random()*ids.length)];
+      ids.forEach(function(k){var q=G.players[k];q.role=(k===tv)?'tvar':'survivor';q.room=null;
+        q.cd={scream:now+20000,dark:now+40000,decoy:now+10000}});
+      G.found={};G.log=[];G.history=[];G.lastPing=null;G.freezeUntil=0;G.darkUntil=0;
+      G.phase='play';G.startedAt=now;G.endsAt=now+G.settings.minutes*60000;
+      G.nextPing=now+15000;G.nextHint=now+25000;G.winner=null;
+      logAdd('Игра началась. Свет погас…');
+      sendEv(ids,{k:'start'});broadcast();saveHost();return;
+    }
+    case 'again':
+      if(pid!==myId||G.phase!=='end')return;
+      G.phase='lobby';G.winner=null;G.found={};G.log=[];G.history=[];G.lastPing=null;
+      allIds().forEach(function(k){G.players[k].role='survivor';G.players[k].room=null});
+      broadcast();saveHost();return;
+    case 'kick':
+      if(pid!==myId||!G.players[m.id]||m.id===myId)return;
+      removePlayer(m.id,true);return;
+    case 'abort':
+      if(pid!==myId||G.phase!=='play')return;
+      finish(null,'Ведущий завершил игру.');return;
+    case 'code':{
+      if(G.phase!=='play'||p.role!=='survivor')return;
+      var code=String(m.code||'').trim();
+      var it=null;for(var i=0;i<G.settings.items;i++){if(ITEMS[i].code===code)it=ITEMS[i]}
+      if(!it){send(pid,{t:'ev',k:'codeBad'});return}
+      if(G.found[it.code]){send(pid,{t:'ev',k:'codeDup',name:it.name});return}
+      G.found[it.code]={name:it.name,by:p.name,t:now};
+      logAdd('🔎 '+p.name+' нашёл: '+it.name+' ('+Object.keys(G.found).length+'/'+G.settings.items+')');
+      sendEv(allIds(),{k:'item',name:it.name,by:p.name});
+      send(pid,{t:'ev',k:'codeOk',name:it.name});
+      checkEnd();broadcast();saveHost();return;
+    }
+    case 'caught':{
+      if(G.phase!=='play')return;
+      var target=m.who||pid;var tp=G.players[target];
+      if(!tp||tp.role!=='survivor')return;
+      if(target!==pid&&p.role!=='tvar')return;
+      if(target===pid&&p.role!=='survivor')return;
+      tp.role='tvar';tp.cd={scream:now+20000,dark:now+40000,decoy:now+10000};
+      logAdd('💀 Один из выживших заражён. Выживших: '+idsOf('survivor').length);
+      send(target,{t:'ev',k:'infect'});
+      sendEv(allIds().filter(function(k){return k!==target}),{k:'scare'});
+      checkEnd();broadcast();saveHost();return;
+    }
+    case 'ability':{
+      if(G.phase!=='play'||p.role!=='tvar')return;
+      var a=m.a;if(!CD[a]||now<p.cd[a])return;
+      if(a==='decoy'&&G.settings.rooms.indexOf(m.room)<0)return;
+      p.cd[a]=now+CD[a];
+      if(a==='scream'){G.freezeUntil=now+5000;sendEv(idsOf('survivor'),{k:'scream'})}
+      else if(a==='dark'){G.darkUntil=now+20000;sendEv(idsOf('survivor'),{k:'dark'})}
+      else if(a==='decoy'){G.lastPing={t:now,rooms:[m.room]};sendEv(idsOf('survivor'),{k:'ping',rooms:[m.room]})}
+      broadcast();saveHost();return;
+    }
+  }
+}
+function removePlayer(pid,kicked){
+  var c=conns[pid];
+  if(kicked&&c&&c.open){try{c.send({t:'err',msg:'Ведущий исключил тебя из игры',fatal:1})}catch(e){}}
+  delete G.players[pid];delete conns[pid];
+  if(G.settings.tvarId===pid)G.settings.tvarId=null;
+  if(c){setTimeout(function(){try{c.close()}catch(e){}},300)}
+  if(G.phase==='play')checkEnd();
+  broadcast();saveHost();
+}
+
+/* ================= Сеть: клиент ================= */
+function clientJoin(code,name){
+  role='client';roomCode=code;myName=name;
+  ss('tvar-role','client');ss('tvar-room',code);ss('tvar-name',name);
+  startClientTimers();reconnect();
+}
+function newClientPeer(){
+  if(peer){try{peer.destroy()}catch(e){}}
+  peer=new Peer(undefined,ICE);var p=peer;
+  p.on('open',function(){if(peer===p)openConn()});
+  p.on('error',function(e){
+    if(peer!==p)return;
+    if(e.type==='peer-unavailable'){
+      if(!V){toast('Комната не найдена. Проверь код.',3500);resetToHome();return}
+      scheduleRecon();return;
+    }
+    scheduleRecon();
+  });
+  p.on('disconnected',function(){try{p.reconnect()}catch(e){}});
+}
+function reconnect(){
+  if(role!=='client')return;
+  if(!peer||peer.destroyed||peer.disconnected&&!peer.open){newClientPeer();return}
+  if(peer.open)openConn();else newClientPeer();
+}
+function openConn(){
+  if(role!=='client'||!peer||!peer.open)return;
+  if(conn){var o=conn;conn=null;try{o.close()}catch(e){}}
+  var c=peer.connect(PREFIX+roomCode,{reliable:true});conn=c;var opened=false;
+  c.on('open',function(){
+    if(conn!==c)return;opened=true;
+    c.send({t:'hello',cid:myId,name:myName});
+  });
+  c.on('data',function(m){if(conn===c)clientRecv(m)});
+  c.on('close',function(){if(conn===c){setConn(false);scheduleRecon()}});
+  c.on('error',function(){if(conn===c)scheduleRecon()});
+  setTimeout(function(){if(conn===c&&!opened){try{c.close()}catch(e){}scheduleRecon()}},9000);
+}
+function scheduleRecon(){
+  if(role!=='client'||reconTimer)return;
+  if(V)setConn(false);
+  reconTimer=setTimeout(function(){reconTimer=null;reconnect()},2000);
+}
+function setConn(ok){$('#conn').classList.toggle('hidden',ok)}
+function startClientTimers(){
+  clearInterval(hbTimer);clearInterval(staleTimer);
+  hbTimer=setInterval(function(){if(role==='client'&&conn&&conn.open){try{conn.send({t:'hb'})}catch(e){}}},3000);
+  staleTimer=setInterval(function(){
+    if(role==='client'&&V&&Date.now()-lastState>7000){setConn(false);if(!reconTimer)reconnect()}
+  },2000);
+}
+function clientRecv(m){
+  if(!m||typeof m!=='object')return;
+  if(m.t==='state'){
+    var prevRole=V&&V.me?V.me.role:null,prevPhase=V?V.phase:null;
+    V=m.v;srvOff=V.now-Date.now();lastState=Date.now();
+    if(role==='client')setConn(true);
+    if(!V.me){resetToHome('Тебя нет в комнате');return}
+    render(prevRole,prevPhase);
+  }else if(m.t==='ev'){playEv(m)}
+  else if(m.t==='err'){
+    toast(m.msg,3800);
+    if(m.fatal)resetToHome();
+  }
+}
+function act(m){
+  if(role==='host'){handleAction(myId,m)}
+  else if(conn&&conn.open){try{conn.send(m)}catch(e){}}
+  else toast('Нет связи…');
+}
+function resetToHome(msg){
+  clearInterval(tickTimer);clearInterval(hbTimer);clearInterval(staleTimer);clearTimeout(reconTimer);reconTimer=null;
+  if(peer){try{peer.destroy()}catch(e){}}
+  peer=null;conn=null;conns={};G=null;V=null;role='none';docOpen=null;builtRole=null;sigs={};
+  ss('tvar-host',null);ss('tvar-role',null);ss('tvar-room',null);
+  setConn(true);closeOverlays();show('home');
+  if(msg)toast(msg);
+}
+function leaveRoom(){
+  if(role==='host'){
+    if(!confirm('Закрыть комнату? Игра закончится для всех.'))return;
+    if(G){Object.keys(conns).forEach(function(k){var c=conns[k];if(c&&c.open){try{c.send({t:'err',msg:'Ведущий закрыл комнату',fatal:1})}catch(e){}}})}
+    setTimeout(function(){resetToHome()},300);
+  }else{
+    if(V&&V.phase==='play'&&!confirm('Выйти из текущей игры?'))return;
+    if(conn&&conn.open){try{conn.send({t:'leave'})}catch(e){}}
+    setTimeout(function(){resetToHome()},150);
+  }
+}
+
+/* ================= События (звуки/эффекты) ================= */
+function playEv(m){
+  switch(m.k){
+    case 'start':SFX.start();vib([200,100,200]);break;
+    case 'ping':SFX.ping();vib(80);flashRadar();break;
+    case 'hint':SFX.steps(.25);vib(60);{var hh=$('#hint');if(hh)hh.innerHTML='👂 Слышен шум в комнате: <b style="color:var(--amber)">'+esc(m.room)+'</b>'}break;
+    case 'scream':SFX.scream();vib([300,100,300]);break;
+    case 'dark':SFX.dark();vib(400);break;
+    case 'item':SFX.item();toast('🔎 '+m.by+' нашёл: '+m.name);break;
+    case 'codeOk':SFX.item();toast('✅ Найдено: '+m.name);{var ci=$('#codeIn');if(ci)ci.value=''}break;
+    case 'codeDup':SFX.bad();toast('Это ('+m.name+') уже найдено');break;
+    case 'codeBad':SFX.bad();vib(150);toast('❌ Неверный код');break;
+    case 'infect':SFX.infect();vib([500,150,500]);break;
+    case 'scare':SFX.steps(.3);vib(120);break;
+    case 'end':if(V&&V.winner){var w=V.winner.w;var mine=V.me&&V.me.role;(w==='survivors'&&mine==='survivor'||w==='tvar'&&mine==='tvar')?SFX.win():SFX.lose()}break;
+  }
+}
+var radarFlash=0;
+function flashRadar(){radarFlash=performance.now()}
+
+/* ================= Рендер ================= */
+function setHTML(id,key,html){
+  var el=document.getElementById(id);if(!el)return;
+  if(sigs[id]!==key){sigs[id]=key;el.innerHTML=html()}
+}
+function render(prevRole,prevPhase){
+  if(!V)return;
+  var lv=logicalView();
+  if(!docOpen&&currentView!==lv){closeOverlays();show(lv)}
+  if(lv!=='play'){builtRole=null;sigs={}}
+  if(lv==='lobby')renderLobby();
+  else if(lv==='play'){
+    if(prevPhase!=='play'||(prevRole&&V.me.role!==prevRole&&builtRole))roleCard(prevPhase!=='play');
+    renderPlay();wakeLock();
+  }else renderEnd();
+}
+function chipsHTML(rooms,sel,act,extra){
+  return rooms.map(function(r){
+    return '<button class="chip'+(r===sel?' sel':'')+(extra||'')+'" data-act="'+act+'" data-v="'+esc(r)+'">'+esc(r)+'</button>';
+  }).join('');
+}
+
+/* --- Лобби --- */
+function renderLobby(){
+  var isHost=role==='host';
+  $('#lobCode').textContent=V.code;
+  $('#lobCount').textContent=V.players.length;
+  var tid=V.settings.tvarId;
+  var html=V.players.map(function(p){
+    var s='<div class="pl"><span class="nm">'+esc(p.name)+(p.id===myId?' <span class="tag g">ты</span>':'')+(p.id===V.hostId?' <span class="tag">ведущий</span>':'')+(isHost&&tid===p.id?' <span class="tag red">Тварь</span>':'')+'</span>';
+    if(!p.connected)s+='<span class="off">нет связи</span>';
+    if(isHost){
+      s+='<button class="btn small" data-act="setTvar" data-v="'+esc(p.id)+'" title="Назначить Тварью">'+(tid===p.id?'🎲':'😈')+'</button>';
+      if(p.id!==myId)s+=' <button class="btn small" data-act="kick" data-v="'+esc(p.id)+'">✖</button>';
+    }
+    return s+'</div>';
+  }).join('');
+  setHTML('lobPlayers','lp|'+html,function(){return html});
+  var note=$('#lobTvarNote');
+  note.classList.toggle('hidden',!isHost);
+  note.textContent=tid?'Тварь назначена тобой (😈). Нажми 🎲 у неё, чтобы выбрать случайно. Ты узнаешь, кто она!':'Тварь выберется случайно и тайно. (😈 — назначить вручную; ведущий тогда будет знать, кто Тварь.)';
+  $('#cfgNote').classList.toggle('hidden',isHost);
+  var r=$('#cfgRooms'),it=$('#cfgItems'),mi=$('#cfgMin');
+  r.disabled=it.disabled=mi.disabled=!isHost;
+  if(document.activeElement!==r)r.value=V.settings.rooms.join('\n');
+  if(document.activeElement!==it)it.value=String(V.settings.items);
+  if(document.activeElement!==mi)mi.value=String(V.settings.minutes);
+  $('#btnStart').classList.toggle('hidden',!isHost);
+  $('#btnStart').disabled=V.players.length<2;
+  $('#lobWait').classList.toggle('hidden',isHost);
+}
+
+/* --- Игра --- */
+function buildPlay(){
+  var r=V.me.role;
+  if(builtRole===r)return;
+  builtRole=r;sigs={};decoyMode=false;
+  var el=$('#playBody');
+  if(r==='survivor'){
+    el.innerHTML=
+     '<div class="radarwrap"><canvas id="radar" width="640" height="640"></canvas></div>'+
+     '<div class="radarmsg d1" id="radarMsg">Тихо…</div>'+
+     '<div class="ping" id="pingInfo">Ждём первый сигнал…</div>'+
+     '<div class="items" id="itemsBar"></div>'+
+     '<div class="row"><input id="codeIn" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Код с карточки"><button class="btn green" data-act="code">OK</button></div>'+
+     '<label>Где ты сейчас?</label><div class="need hidden" id="needRoom">⚠ Отметь комнату — иначе радар не работает</div><div class="chips" id="roomChips"></div>'+
+     '<button class="btn ghost" data-act="caughtSelf">Меня поймали…</button>';
+  }else{
+    el.innerHTML=
+     '<div class="card" style="text-align:center"><b style="color:var(--red);font-size:22px">😈 ТЫ — ТВАРЬ</b><div id="tSub" style="color:var(--dim);font-size:14px"></div></div>'+
+     '<div class="hint" id="hint">Ты слушаешь дом… подсказки приходят каждые ~25 секунд.</div>'+
+     '<label>Где ты сейчас?</label><div class="need hidden" id="needRoom">⚠ Отметь комнату — выжившие получают пинги по ней</div><div class="chips" id="roomChips"></div>'+
+     '<label>Способности</label><div class="abil">'+
+       '<button class="btn" id="ab-scream" data-act="ability" data-v="scream"><span>😱 Крик</span><small></small></button>'+
+       '<button class="btn" id="ab-dark" data-act="ability" data-v="dark"><span>🌑 Тьма</span><small></small></button>'+
+       '<button class="btn" id="ab-decoy" data-act="decoyStart"><span>👻 Приманка</span><small></small></button>'+
+     '</div>'+
+     '<div class="card hidden" id="decoyPick"><b>Выбери комнату для ложного пинга:</b><div class="chips" id="decoyChips"></div><button class="btn ghost" data-act="decoyCancel">Отмена</button></div>'+
+     '<label>Выжившие — коснулся? нажми «Поймал»</label><div id="survList"></div>';
+  }
+}
+function renderPlay(){
+  buildPlay();
+  var me=V.me,rooms=V.settings.rooms,isS=me.role==='survivor';
+  $('#pMid').textContent=isS?('Предметы: '+V.found.length+'/'+V.settings.items+' · живых: '+V.survivors):('Выживших: '+V.survivors+' · предметов: '+V.found.length+'/'+V.settings.items);
+  setHTML('roomChips','rc|'+rooms.join('|')+'|'+me.room,function(){
+    var h=chipsHTML(rooms,me.room,'room',isS?'':' red');
+    return h;
+  });
+  $('#needRoom').classList.toggle('hidden',me.room!=null);
+  if(isS){
+    var itemsHTML='';
+    for(var i=0;i<V.settings.items;i++){var f=V.found[i];itemsHTML+='<span class="item'+(f?' ok':'')+'">'+(f?'✔ '+esc(f.name):'? ? ?')+'</span>'}
+    setHTML('itemsBar','it|'+itemsHTML,function(){return itemsHTML});
+    var d=V.danger||1,m=$('#radarMsg');
+    m.className='radarmsg d'+d;
+    m.textContent=d===3?'ОНО ЗДЕСЬ!':d===2?'Что-то рядом!':'Тихо…';
+  }else{
+    var surv=V.players.filter(function(p){return p.role==='survivor'});
+    var sh=surv.map(function(p){return '<div class="pl"><span class="nm">'+esc(p.name)+'</span>'+(p.connected?'':'<span class="off">нет связи</span>')+'<button class="btn small" data-act="catch" data-v="'+esc(p.id)+'">Поймал</button></div>'}).join('')||'<div class="need">Выживших не осталось</div>';
+    setHTML('survList','sl|'+sh,function(){return sh});
+    var others=V.players.filter(function(p){return p.role==='tvar'&&p.id!==myId}).map(function(p){return p.name});
+    $('#tSub').textContent=others.length?('Твои собратья: '+others.join(', ')):'Ты один в тени';
+  }
+  uiTick();
+}
+
+/* --- Финал --- */
+function renderEnd(){
+  var w=V.winner||{};
+  var el=$('#endWin');
+  if(w.w==='survivors'){el.textContent='🏆 ВЫЖИВШИЕ ПОБЕДИЛИ';el.className='win s'}
+  else if(w.w==='tvar'){el.textContent='💀 ПОБЕДИЛА ТВАРЬ';el.className='win t'}
+  else{el.textContent='Игра прервана';el.className='win'}
+  $('#endReason').textContent=w.reason||'';
+  $('#endPlayers').innerHTML=V.players.map(function(p){return '<div class="pl"><span class="nm">'+esc(p.name)+'</span><span class="tag '+(p.role==='tvar'?'red':'g')+'">'+(p.role==='tvar'?'Тварь':'Выживший')+'</span></div>'}).join('');
+  $('#endItems').innerHTML=V.found.length?V.found.map(function(f){return '<div class="pl"><span class="nm">'+esc(f.name)+'</span><span class="tag">нашёл '+esc(f.by)+'</span></div>'}).join(''):'<div class="need">Ничего не найдено</div>';
+  $('#endLog').innerHTML=V.log.map(function(l){return '<div>'+esc(l.txt)+'</div>'}).join('');
+  var h=role==='host';
+  $('#btnAgain').classList.toggle('hidden',!h);
+  $('#endWait').classList.toggle('hidden',h);
+}
+
+/* --- Оверлеи --- */
+function closeOverlays(){$('#overlays').innerHTML='';freezeShown=false}
+function roleCard(first){
+  if(!V||!V.me)return;
+  var t=V.me.role==='tvar';
+  var box=document.createElement('div');box.className='overlay';box.dataset.act='closeRole';box.id='roleOv';
+  box.innerHTML='<h1 style="color:'+(t?'var(--red)':'var(--green)')+'">'+(t?'😈 ТЫ — ТВАРЬ':'🕯 ТЫ ВЫЖИВШИЙ')+'</h1>'+
+   '<p>'+(t?(first?'Охоться, отмечай свою комнату, пугай выживших способностями. Коснись игрока — и он станет Тварью.':'Теперь ты — Тварь. Охоться на бывших друзей!'):'Найди все предметы и не дай Твари себя коснуться. Следи за радаром.')+'</p>'+
+   '<p style="color:var(--dim);font-size:15px">Никому не показывай экран.<br>Коснись, чтобы скрыть.</p>';
+  var ov=$('#overlays');ov.innerHTML='';ov.appendChild(box);
+}
+var freezeShown=false;
+function uiTick(){
+  if(!V||V.phase!=='play'||!V.me)return;
+  var now=srvNow(),me=V.me;
+  $('#pTimer').textContent=fmt(V.endsAt-now);
+  if(me.role==='tvar'){
+    ['scream','dark','decoy'].forEach(function(a){
+      var b=document.getElementById('ab-'+a);if(!b)return;
+      var left=me.cd[a]-now,s=b.querySelector('small');
+      b.disabled=left>0;s.textContent=left>0?Math.ceil(left/1000)+' с':'готово';
+    });
+  }else{
+    var ping=$('#pingInfo');
+    if(ping){
+      if(V.lastPing){
+        var ago=Math.max(0,Math.round((now-V.lastPing.t)/1000)),rr=V.lastPing.rooms;
+        ping.innerHTML='Сигнал '+ago+' с назад: '+(rr.length?'<b>'+rr.map(esc).join(', ')+'</b>':'<b>искажён</b>');
+      }
+    }
+    var fr=now<V.freezeUntil;
+    if(fr&&!freezeShown){
+      freezeShown=true;var o=document.createElement('div');o.className='overlay freeze';o.id='frOv';
+      o.innerHTML='<h1>ЗАМРИ!</h1><p id="frT"></p>';$('#overlays').appendChild(o);
+    }
+    if(fr){var t=$('#frT');if(t)t.textContent=Math.ceil((V.freezeUntil-now)/1000)+' с — не двигайся'}
+    else if(freezeShown){freezeShown=false;var f=$('#frOv');if(f)f.remove()}
+  }
+}
+setInterval(uiTick,250);
+
+/* --- Меню --- */
+function openMenu(){
+  if(!V)return;
+  var h=role==='host';
+  var box=document.createElement('div');box.className='menu';box.id='menuOv';
+  var list='';
+  if(h&&V.phase!=='lobby'){
+    list='<h3>Игроки</h3>'+V.players.map(function(p){return '<div class="pl"><span class="nm">'+esc(p.name)+'</span>'+(p.connected?'':'<span class="off">нет связи</span>')+(p.id!==myId?'<button class="btn small" data-act="kick" data-v="'+esc(p.id)+'">Исключить</button>':'')+'</div>'}).join('');
+  }
+  box.innerHTML='<div class="box"><h2>Меню</h2>'+
+   '<button class="btn" data-act="sound">'+(soundOn?'🔊 Звук включён':'🔇 Звук выключен')+'</button>'+
+   '<button class="btn" data-act="doc" data-v="rules">📖 Правила</button>'+
+   (h&&V.phase==='play'?'<button class="btn" data-act="abort">⏹ Завершить игру</button>':'')+
+   list+
+   '<button class="btn ghost" data-act="leave">'+(h?'Закрыть комнату':'Выйти из игры')+'</button>'+
+   '<button class="btn" data-act="closeMenu">Закрыть</button></div>';
+  document.body.appendChild(box);
+}
+function closeMenu(){var m=$('#menuOv');if(m)m.remove()}
+
+/* ================= Радар ================= */
+function rnd(s){var x=Math.sin(s*12.9898)*43758.5453;return x-Math.floor(x)}
+function drawRadar(ts){
+  requestAnimationFrame(drawRadar);
+  var cv=document.getElementById('radar');
+  if(!cv||!V||V.phase!=='play'||!V.me||V.me.role!=='survivor')return;
+  var ctx=cv.getContext('2d'),W=cv.width,R=W/2,now=srvNow();
+  var dark=now<V.darkUntil,fr=now<V.freezeUntil,d=V.danger||1;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,W,W);
+  ctx.save();
+  if(fr)ctx.translate((Math.random()-.5)*14,(Math.random()-.5)*14);
+  var g=ctx.createRadialGradient(R,R,0,R,R,R);
+  g.addColorStop(0,'#06210f');g.addColorStop(1,'#020a05');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(R,R,R-2,0,7);ctx.fill();
+  var col=d===3?'255,45,61':'55,255,139';
+  ctx.strokeStyle='rgba('+col+',.35)';ctx.lineWidth=2;
+  for(var i=1;i<=4;i++){ctx.beginPath();ctx.arc(R,R,(R-4)*i/4,0,7);ctx.stroke()}
+  ctx.beginPath();ctx.moveTo(R,4);ctx.lineTo(R,W-4);ctx.moveTo(4,R);ctx.lineTo(W-4,R);ctx.stroke();
+  var sa=((ts/2600)%1)*Math.PI*2;
+  if(dark){
+    for(var k=0;k<500;k++){
+      ctx.fillStyle='rgba(180,255,200,'+(Math.random()*.5)+')';
+      ctx.fillRect(Math.random()*W,Math.random()*W,3,3);
+    }
+    ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(0,0,W,W);
+    ctx.fillStyle='#ff2d3d';ctx.font='bold 44px system-ui';ctx.textAlign='center';
+    ctx.fillText('СИГНАЛ ПОТЕРЯН',R,R+14);
+  }else{
+    for(var j=0;j<26;j++){
+      ctx.fillStyle='rgba('+col+','+(0.28*(1-j/26))+')';
+      ctx.beginPath();ctx.moveTo(R,R);ctx.arc(R,R,R-4,sa-(j+1)*0.035,sa-j*0.035);ctx.closePath();ctx.fill();
+    }
+    ctx.strokeStyle='rgba('+col+',.9)';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(R,R);ctx.lineTo(R+Math.cos(sa)*(R-4),R+Math.sin(sa)*(R-4));ctx.stroke();
+    var seed=(V.lastPing?V.lastPing.t:1)%1000;
+    var blips=[];
+    if(d>=2)blips.push({a:rnd(seed)*6.283,r:d===3?.2:.5,c:d===3?'255,45,61':'255,184,48',big:true});
+    var bucket=Math.floor(ts/6000);
+    blips.push({a:rnd(bucket+3)*6.283,r:.55+rnd(bucket+9)*.4,c:'55,255,139',big:false,faint:true});
+    if(rnd(bucket+17)>.5)blips.push({a:rnd(bucket+21)*6.283,r:.35+rnd(bucket+5)*.5,c:'55,255,139',big:false,faint:true});
+    blips.forEach(function(b){
+      var delta=(((sa-b.a)%6.283)+6.283)%6.283;
+      var al=Math.max(0,1-delta/(Math.PI*1.4));
+      if(b.big)al=Math.max(al,.25+.25*Math.sin(ts/(d===3?90:220)));
+      if(b.faint)al*=.45;
+      var x=R+Math.cos(b.a)*(R-30)*b.r,y=R+Math.sin(b.a)*(R-30)*b.r;
+      ctx.fillStyle='rgba('+b.c+','+al+')';
+      ctx.beginPath();ctx.arc(x,y,b.big?(d===3?22:14):7,0,7);ctx.fill();
+    });
+  }
+  var fl=ts-radarFlash;
+  if(fl<500){ctx.strokeStyle='rgba(255,184,48,'+(1-fl/500)+')';ctx.lineWidth=8;ctx.beginPath();ctx.arc(R,R,(R-4)*fl/500,0,7);ctx.stroke()}
+  ctx.restore();
+}
+requestAnimationFrame(drawRadar);
+
+/* ================= Сердцебиение и ложные шаги ================= */
+var lastBeat=0,nextFake=Date.now()+20000;
+setInterval(function(){
+  if(!V||V.phase!=='play'||!V.me||V.me.role!=='survivor')return;
+  var d=V.danger||1,now=Date.now();
+  if(d>=2){
+    var per=d===3?550:1000;
+    if(now-lastBeat>=per){lastBeat=now;SFX.beat(d===3?.4:.22);if(d===3)vib(50)}
+  }
+  if(now>nextFake){nextFake=now+18000+Math.random()*27000;if(Math.random()<.8)SFX.steps(.1)}
+},150);
+
+/* ================= Wake lock ================= */
+var wl=null;
+function wakeLock(){
+  try{if(navigator.wakeLock&&!wl){navigator.wakeLock.request('screen').then(function(l){wl=l;l.addEventListener('release',function(){wl=null})}).catch(function(){})}}catch(e){}
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){
+    if(V&&V.phase==='play')wakeLock();
+    if(role==='client'&&V){lastState=0}
+  }
+});
+
+/* ================= Обработчики кликов ================= */
+var ACT={
+  create:function(){
+    var n=$('#inName').value.trim();if(!n){toast('Введи имя');$('#inName').focus();return}
+    ac();myName=n.slice(0,14);ls('tvar-name',myName);
+    hostStart(String(1000+Math.floor(Math.random()*9000)),null,0);
+  },
+  join:function(){
+    var n=$('#inName').value.trim(),c=$('#inCode').value.trim();
+    if(!n){toast('Введи имя');$('#inName').focus();return}
+    if(!/^\d{4}$/.test(c)){toast('Код — 4 цифры');$('#inCode').focus();return}
+    ac();ls('tvar-name',n.slice(0,14));clientJoin(c,n.slice(0,14));
+  },
+  doc:function(b){closeMenu();openDoc(b.dataset.v)},
+  closedoc:closeDoc,
+  copy:function(){
+    var url=location.href.split('?')[0].split('#')[0]+'?r='+V.code;
+    var done=function(){toast('Ссылка скопирована')};
+    try{navigator.clipboard.writeText(url).then(done,function(){prompt('Скопируй ссылку:',url)})}catch(e){prompt('Скопируй ссылку:',url)}
+  },
+  start:function(){act({t:'start'})},
+  again:function(){act({t:'again'})},
+  leave:function(){closeMenu();leaveRoom()},
+  menu:openMenu,closeMenu:closeMenu,
+  sound:function(){soundOn=!soundOn;ls('tvar-sound',soundOn?'1':'0');closeMenu();toast(soundOn?'Звук включён':'Звук выключен');if(soundOn)SFX.ping()},
+  abort:function(){closeMenu();if(confirm('Завершить игру для всех?'))act({t:'abort'})},
+  kick:function(b){
+    var p=V.players.filter(function(x){return x.id===b.dataset.v})[0];
+    if(p&&confirm('Исключить '+p.name+'?')){closeMenu();act({t:'kick',id:b.dataset.v})}
+  },
+  setTvar:function(b){
+    var cur=V.settings.tvarId,id=b.dataset.v;
+    act({t:'cfg',tvarId:cur===id?null:id});
+  },
+  room:function(b){act({t:'room',room:b.dataset.v});SFX.beat(.05)},
+  code:function(){
+    var c=$('#codeIn').value.trim();
+    if(!/^\d{4}$/.test(c)){toast('Код — 4 цифры');return}
+    act({t:'code',code:c});
+  },
+  caughtSelf:function(){if(confirm('Тварь тебя коснулась? Ты станешь Тварью.'))act({t:'caught'})},
+  catch:function(b){
+    var p=V.players.filter(function(x){return x.id===b.dataset.v})[0];
+    if(p&&confirm('Ты коснулся игрока '+p.name+'? Он станет Тварью.'))act({t:'caught',who:b.dataset.v});
+  },
+  ability:function(b){act({t:'ability',a:b.dataset.v})},
+  decoyStart:function(){
+    decoyMode=true;$('#decoyPick').classList.remove('hidden');
+    $('#decoyChips').innerHTML=chipsHTML(V.settings.rooms,null,'decoyRoom');
+  },
+  decoyCancel:function(){decoyMode=false;$('#decoyPick').classList.add('hidden')},
+  decoyRoom:function(b){act({t:'ability',a:'decoy',room:b.dataset.v});ACT.decoyCancel()},
+  closeRole:function(){var r=$('#roleOv');if(r)r.remove()}
+};
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-act]');if(!b)return;
+  var f=ACT[b.dataset.act];if(f){e.preventDefault();f(b)}
+});
+$('#cfgRooms').addEventListener('change',function(){act({t:'cfg',rooms:this.value.split('\n')})});
+$('#cfgItems').addEventListener('change',function(){act({t:'cfg',items:this.value})});
+$('#cfgMin').addEventListener('change',function(){act({t:'cfg',minutes:this.value})});
+$('#inCode').addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,4)});
+document.addEventListener('input',function(e){if(e.target&&e.target.id==='codeIn')e.target.value=e.target.value.replace(/\D/g,'').slice(0,4)});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  if(e.target.id==='codeIn')ACT.code();
+  else if(e.target.id==='inCode')ACT.join();
+  else if(e.target.id==='inName')($('#inCode').value?ACT.join():ACT.create)();
+});
+
+/* ================= Карточки ================= */
+$('#cardsGrid').innerHTML=ITEMS.map(function(it,i){
+  return '<div class="pcard"><small>Предмет '+(i+1)+'</small><div class="nm">'+it.name+'</div><div class="n">'+it.code+'</div><small>Введи число в игре «Тварь в доме»</small></div>';
+}).join('');
+
+/* ================= Старт страницы ================= */
+(function init(){
+  var nm=ls('tvar-name')||ss('tvar-name')||'';$('#inName').value=nm;
+  var q=location.search.match(/[?&]r=(\d{4})/);
+  if(q)$('#inCode').value=q[1];
+  var hostSave=ss('tvar-host');
+  if(hostSave){
+    try{
+      var s=JSON.parse(hostSave);
+      if(s&&s.G&&Date.now()-s.t<3*3600*1000){myName=s.name;hostStart(s.code,s.G,0);return}
+    }catch(e){}
+    ss('tvar-host',null);
+  }
+  if(ss('tvar-role')==='client'&&ss('tvar-room')&&ss('tvar-name')){
+    clientJoin(ss('tvar-room'),ss('tvar-name'));
+  }
+})();
+})();
+</script>
+</body>
+</html>
